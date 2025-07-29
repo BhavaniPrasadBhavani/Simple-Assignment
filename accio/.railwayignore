@@ -1,0 +1,31 @@
+# Ignore frontend files when deploying backend
+src/
+public/
+.next/
+out/
+next.config.ts
+next-env.d.ts
+postcss.config.mjs
+eslint.config.mjs
+tsconfig.json
+vercel.json
+netlify.toml
+
+# Keep only backend directory and root package.json
+!backend/
+!railway.json
+!package.json
+!README.md
+!.gitignore
+
+# Ignore development files
+node_modules/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
