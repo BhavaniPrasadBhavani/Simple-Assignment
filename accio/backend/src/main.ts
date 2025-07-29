@@ -32,6 +32,12 @@ async function bootstrap() {
     optionsSuccessStatus: 200, // For legacy browser support
   });
 
+  // Log CORS configuration for debugging
+  console.log('🌐 CORS enabled for origins:', [
+    'https://simple-assignment-kappa.vercel.app',
+    'http://localhost:3000'
+  ]);
+
   // Global validation pipe
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
@@ -46,5 +52,7 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
   
   console.log(`🚀 Backend server running on http://localhost:${port}`);
+  console.log(`📡 API endpoints available at: http://localhost:${port}/api`);
+  console.log(`🌐 CORS enabled for Vercel domain: https://simple-assignment-kappa.vercel.app`);
 }
 bootstrap();
