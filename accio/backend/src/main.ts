@@ -13,23 +13,41 @@ async function bootstrap() {
   
   const configService = app.get(ConfigService);
   
-  // Enable CORS
+  // Enable CORS with explicit configuration
   app.enableCors({
-    origin: [
-      configService.get('FRONTEND_URL', 'http://localhost:3000'),
-      'http://localhost:3000',
-      // Your actual Vercel domain
-      'https://simple-assignment-kappa.vercel.app',
-      // Your old domain (in case it's still needed)
-      'https://simple-assignment-crooffv89.vercel.app',
-      // Allow any vercel app subdomain for future deployments
-      /^https:\/\/.*\.vercel\.app$/,
-      /^https:\/\/simple-assignment.*\.vercel\.app$/,
-    ],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      const allowedOrigins = [
+        'http://localhost:3000',
+        'https://simple-assignment-kappa.vercel.app',
+        'https://simple-assignment-crooffv89.vercel.app',
+      ];
+      
+      // Check if the origin is in the allowed list or matches vercel pattern
+      if (allowedOrigins.includes(origin) || /^https:\/\/.*\.vercel\.app$/.test(origin)) {
+        callback(null, true);
+      } else {
+        console.log('❌ CORS rejected origin:', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+    allowedHeaders: [
+      'Content-Type', 
+      'Authorization', 
+      'Accept', 
+      'Origin', 
+      'X-Requested-With',
+      'Access-Control-Allow-Headers',
+      'Access-Control-Request-Method',
+      'Access-Control-Request-Headers'
+    ],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
     optionsSuccessStatus: 200, // For legacy browser support
+    preflightContinue: false,
   });
 
   // Log CORS configuration for debugging
@@ -37,6 +55,15 @@ async function bootstrap() {
     'https://simple-assignment-kappa.vercel.app',
     'http://localhost:3000'
   ]);
+
+  // Add request logging middleware
+  app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path} - Origin: ${req.get('Origin')}`);
+    if (req.method === 'OPTIONS') {
+      console.log('🔄 Preflight request detected');
+    }
+    next();
+  });
 
   // Global validation pipe
   app.useGlobalPipes(new ValidationPipe({
