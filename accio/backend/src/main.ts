@@ -18,8 +18,14 @@ async function bootstrap() {
     origin: [
       configService.get('FRONTEND_URL', 'http://localhost:3000'),
       'http://localhost:3000',
+      // Add your Vercel domain here
+      /^https:\/\/.*\.vercel\.app$/,
+      // Allow any vercel app subdomain
+      /^https:\/\/simple-assignment.*\.vercel\.app$/,
     ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 
   // Global validation pipe
