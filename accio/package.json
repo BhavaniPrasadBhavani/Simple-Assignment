@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
+    "build": "cd backend && npm ci && npm run build",
+    "start": "cd backend && node dist/main.js",
     "lint": "next lint",
     "dev:backend": "cd backend && npm run start:dev",
     "dev:full": "concurrently \"npm run dev:backend\" \"npm run dev\"",
-    "install:all": "npm install && cd backend && npm install"
+    "install:all": "npm install && cd backend && npm install",
+    "railway:build": "cd backend && npm ci && npm run build",
+    "railway:start": "cd backend && node dist/main.js"
   },
   "dependencies": {
     "@nestjs/typeorm": "^10.0.2",
