@@ -18,14 +18,18 @@ async function bootstrap() {
     origin: [
       configService.get('FRONTEND_URL', 'http://localhost:3000'),
       'http://localhost:3000',
-      // Add your Vercel domain here
+      // Your actual Vercel domain
+      'https://simple-assignment-kappa.vercel.app',
+      // Your old domain (in case it's still needed)
+      'https://simple-assignment-crooffv89.vercel.app',
+      // Allow any vercel app subdomain for future deployments
       /^https:\/\/.*\.vercel\.app$/,
-      // Allow any vercel app subdomain
       /^https:\/\/simple-assignment.*\.vercel\.app$/,
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+    optionsSuccessStatus: 200, // For legacy browser support
   });
 
   // Global validation pipe
