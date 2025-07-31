@@ -117,21 +117,30 @@ Focus on creating components that are both visually impressive and functionally 
       throw new BadRequestException('OpenAI API key not configured');
     }
 
-    // Create OpenRouter client (works with OpenRouter API keys)
-    const openrouter = createOpenAI({
-      apiKey: apiKey,
-      baseURL: 'https://openrouter.ai/api/v1',
-    });
+    console.log('🤖 AI Service - Starting generation with OpenRouter');
+    console.log('📝 Prompt:', prompt);
 
-    // Stream response from OpenRouter's model
-    const result = await streamText({
-      model: openrouter('meta-llama/llama-3.1-8b-instruct:free'),
-      messages,
-      temperature: 0.7,
-      maxTokens: 2000,
-    });
+    try {
+      // Create OpenRouter client (works with OpenRouter API keys)
+      const openrouter = createOpenAI({
+        apiKey: apiKey,
+        baseURL: 'https://openrouter.ai/api/v1',
+      });
 
-    return result.textStream;
+      // Stream response from OpenRouter's model - using a more reliable model
+      const result = await streamText({
+        model: openrouter('microsoft/wizardlm-2-8x22b'),
+        messages,
+        temperature: 0.7,
+        maxTokens: 2000,
+      });
+
+      console.log('✅ AI Service - Stream created successfully');
+      return result.textStream;
+    } catch (error) {
+      console.error('❌ AI Service - Error:', error);
+      throw new BadRequestException(`AI generation failed: ${error.message}`);
+    }
   }
 
   extractCodeFromResponse(response: string): { tsx: string; css: string } {
