@@ -117,14 +117,15 @@ Focus on creating components that are both visually impressive and functionally 
       throw new BadRequestException('OpenAI API key not configured');
     }
 
-    // Create OpenAI client
-    const openai = createOpenAI({
+    // Create OpenRouter client (works with OpenRouter API keys)
+    const openrouter = createOpenAI({
       apiKey: apiKey,
+      baseURL: 'https://openrouter.ai/api/v1',
     });
 
-    // Stream response from OpenAI's GPT model
+    // Stream response from OpenRouter's model
     const result = await streamText({
-      model: openai('gpt-4o-mini'),
+      model: openrouter('meta-llama/llama-3.1-8b-instruct:free'),
       messages,
       temperature: 0.7,
       maxTokens: 2000,
