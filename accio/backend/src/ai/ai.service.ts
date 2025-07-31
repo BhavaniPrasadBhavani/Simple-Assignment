@@ -112,20 +112,19 @@ Focus on creating components that are both visually impressive and functionally 
       },
     ];
 
-    const apiKey = this.configService.get<string>('LLM_API_KEY');
+    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
-      throw new BadRequestException('LLM API key not configured');
+      throw new BadRequestException('OpenAI API key not configured');
     }
 
-    // Create OpenRouter client
-    const openrouter = createOpenAI({
+    // Create OpenAI client
+    const openai = createOpenAI({
       apiKey: apiKey,
-      baseURL: 'https://openrouter.ai/api/v1',
     });
 
-    // Stream response from OpenRouter's Mixtral model
+    // Stream response from OpenAI's GPT model
     const result = await streamText({
-      model: openrouter('mistralai/mixtral-8x7b-instruct'),
+      model: openai('gpt-4o-mini'),
       messages,
       temperature: 0.7,
       maxTokens: 2000,
