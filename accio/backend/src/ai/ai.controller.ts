@@ -44,20 +44,18 @@ export class AiController {
     }
 
     if (!token) {
+      console.log('No token provided in query parameter');
       throw new BadRequestException('Authentication token is required');
     }
+
+    console.log('Token received, attempting verification...');
 
     // Verify the JWT token manually since EventSource can't send headers
     let userId: string;
     try {
       const decoded = this.jwtService.verify(token);
       userId = decoded.sub;
-      
-      // Verify user exists
-      const user = await this.usersService.findById(userId);
-      if (!user) {
-        throw new BadRequestException('Invalid user');
-      }
+      console.log('Token verified successfully for user:', userId);
     } catch (error) {
       console.error('Token verification failed:', error);
       res.status(401).json({ error: 'Invalid authentication token' });
