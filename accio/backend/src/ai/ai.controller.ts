@@ -32,10 +32,10 @@ export class AiController {
   }
 
   @Get('stream/:sessionId')
-  @UseGuards(JwtAuthGuard)
   async streamComponent(
     @Param('sessionId') sessionId: string,
     @Query('prompt') prompt: string,
+    @Query('token') token: string,
     @Request() req: any,
     @Res() res: Response,
   ) {
@@ -43,7 +43,26 @@ export class AiController {
       throw new BadRequestException('Prompt is required');
     }
 
-    const userId = req.user.sub;
+    if (!token) {
+      throw new BadRequestException('Authentication token is required');
+    }
+
+    // Verify the JWT token manually since EventSource can't send headers
+    let userId: string;
+    try {
+      const decoded = this.jwtService.verify(token);
+      userId = decoded.sub;
+      
+      // Verify user exists
+      const user = await this.usersService.findById(userId);
+      if (!user) {
+        throw new BadRequestException('Invalid user');
+      }
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      res.status(401).json({ error: 'Invalid authentication token' });
+      return;
+    }
 
     try {
       const stream = await this.aiService.streamComponentGeneration(
