@@ -31,6 +31,29 @@ export class AiController {
     return { status: 'ok', service: 'ai' };
   }
 
+  @Get('test-token')
+  async testToken(@Query('token') token: string) {
+    if (!token) {
+      return { error: 'No token provided' };
+    }
+
+    try {
+      const decoded = this.jwtService.verify(token);
+      return { 
+        success: true, 
+        userId: decoded.sub,
+        email: decoded.email,
+        iat: decoded.iat,
+        exp: decoded.exp
+      };
+    } catch (error) {
+      return { 
+        error: 'Token verification failed', 
+        details: error.message 
+      };
+    }
+  }
+
   @Get('stream/:sessionId')
   async streamComponent(
     @Param('sessionId') sessionId: string,
