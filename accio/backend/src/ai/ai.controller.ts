@@ -14,6 +14,7 @@ import {
 import { Response } from 'express';
 import { AiService } from './ai.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { QueryJwtAuthGuard } from '../auth/guards/query-jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { Public } from '../auth/decorators/public.decorator';
@@ -55,10 +56,10 @@ export class AiController {
   }
 
   @Get('stream/:sessionId')
+  @UseGuards(QueryJwtAuthGuard)
   async streamComponent(
     @Param('sessionId') sessionId: string,
     @Query('prompt') prompt: string,
-    @Query('token') token: string,
     @Request() req: any,
     @Res() res: Response,
   ) {
@@ -66,24 +67,7 @@ export class AiController {
       throw new BadRequestException('Prompt is required');
     }
 
-    if (!token) {
-      console.log('No token provided in query parameter');
-      throw new BadRequestException('Authentication token is required');
-    }
-
-    console.log('Token received, attempting verification...');
-
-    // Verify the JWT token manually since EventSource can't send headers
-    let userId: string;
-    try {
-      const decoded = this.jwtService.verify(token);
-      userId = decoded.sub;
-      console.log('Token verified successfully for user:', userId);
-    } catch (error) {
-      console.error('Token verification failed:', error);
-      res.status(401).json({ error: 'Invalid authentication token' });
-      return;
-    }
+    const userId = req.user.sub;
 
     try {
       const stream = await this.aiService.streamComponentGeneration(

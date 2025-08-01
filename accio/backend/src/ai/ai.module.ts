@@ -5,11 +5,13 @@ import { AiController } from './ai.controller';
 import { AiService } from './ai.service';
 import { SessionsModule } from '../sessions/sessions.module';
 import { UsersModule } from '../users/users.module';
+import { QueryJwtAuthGuard } from '../auth/guards/query-jwt-auth.guard';
 
 @Module({
   imports: [
     SessionsModule, 
     UsersModule, 
+    ConfigModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -22,6 +24,6 @@ import { UsersModule } from '../users/users.module';
     }),
   ],
   controllers: [AiController],
-  providers: [AiService],
+  providers: [AiService, QueryJwtAuthGuard],
 })
 export class AiModule {}
